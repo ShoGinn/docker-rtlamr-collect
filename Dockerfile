@@ -1,8 +1,12 @@
 FROM golang:latest
 
-RUN go get github.com/bemasher/rtlamr
-RUN go get github.com/bemasher/rtlamr-collect
+RUN set -x && \
+    apt-get update -y && \
+    apt-get install -y --no-install-recommends \
+    rtl-sdr \
+    && go get github.com/bemasher/rtlamr \
+    && go get github.com/bemasher/rtlamr-collect \
+    && chmod a+x ./bin/rtlamr* \
+    && curl -s https://raw.githubusercontent.com/mikenye/deploy-s6-overlay/master/deploy-s6-overlay.sh | sh
 
-RUN chmod a+x ./bin/rtlamr*
-
-CMD ["sh", "-c", "./bin/rtlamr | ./bin/rtlamr-collect"]
+ENTRYPOINT ["/init"]
